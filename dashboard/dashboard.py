@@ -13,28 +13,24 @@ sns.set(style='dark')
 # Fungsi ini akan menggabungkan data secara otomatis saat dashboard dibuka
 @st.cache_data
 def load_data():
-    # Mengambil path folder tempat script ini berada
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Membaca dataset mentah (pastikan file-file ini ada di folder dashboard di GitHub)
-    orders_df = pd.read_csv(os.path.join(current_dir, "orders_dataset.csv"))
-    items_df = pd.read_csv(os.path.join(current_dir, "order_items_dataset.csv"))
-    products_df = pd.read_csv(os.path.join(current_dir, "products_dataset.csv"))
-    customers_df = pd.read_csv(os.path.join(current_dir, "customers_dataset.csv"))
+    base_url = "https://huggingface.co/spaces/kendrickfff/ecommerce-dashboard/resolve/main/data/"
 
-    # Merging Data secara instan
-    # Kita hanya mengambil kolom yang perlu agar hemat memori
+    orders_df = pd.read_csv(base_url + "orders_dataset.csv")
+    items_df = pd.read_csv(base_url + "order_items_dataset.csv")
+    products_df = pd.read_csv(base_url + "products_dataset.csv")
+    customers_df = pd.read_csv(base_url + "customers_dataset.csv")
+
     main_df = pd.merge(orders_df, items_df, on="order_id")
     main_df = pd.merge(main_df, customers_df, on="customer_id")
     main_df = pd.merge(main_df, products_df[["product_id", "product_category_name"]], on="product_id")
-    
-    # Konversi tanggal
+
     datetime_columns = ["order_purchase_timestamp", "order_delivered_customer_date"]
     for column in datetime_columns:
         main_df[column] = pd.to_datetime(main_df[column])
-        
+
     main_df.sort_values(by="order_purchase_timestamp", inplace=True)
     return main_df
+
 
 # Load Data
 all_df = load_data()
@@ -135,3 +131,4 @@ with col_d2:
     st.pyplot(fig)
 
 st.caption('Dibuat oleh Kendrick Filbert | Proyek Akhir Dicoding 2025')
+
