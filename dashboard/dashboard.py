@@ -76,17 +76,21 @@ with col_date1:
         label='Rentang Waktu Analisis',
         min_value=min_date,
         max_value=max_date,
-        value=[min_date, max_date]
+        value=(min_date, max_date)  # pakai tuple juga di default
     )
 
-# Filter logic
-if isinstance(date_range, list) and len(date_range) == 2:
+# Normalisasi output date_range
+if isinstance(date_range, (tuple, list)) and len(date_range) == 2:
     start_date, end_date = date_range
 else:
-    start_date = end_date = date_range[0] if isinstance(date_range, list) else date_range
+    start_date = end_date = date_range
 
-main_df = all_df[(all_df["order_purchase_timestamp"].dt.date >= start_date) & 
-                (all_df["order_purchase_timestamp"].dt.date <= end_date)]
+# Filtering dataframe
+main_df = all_df[
+    (all_df["order_purchase_timestamp"].dt.date >= start_date) &
+    (all_df["order_purchase_timestamp"].dt.date <= end_date)
+]
+
 
 # Siapkan Dataframe
 daily_orders_df = create_daily_orders_df(main_df)
@@ -131,4 +135,5 @@ with col_d2:
     st.pyplot(fig)
 
 st.caption('Dibuat oleh Kendrick Filbert | Proyek Akhir Dicoding 2025')
+
 
